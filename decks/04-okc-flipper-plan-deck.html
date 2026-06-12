@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iLearn 04 · OKC Flipper Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{--bg:#0A0C10;--chip:#1A1E26;--blue:#298DFF;--navy:#1B3A5C;--silver:#AEB6C2;--mut:#67707E;--white:#FFFFFF;--light:#E0E2E6}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%}
+body{font-family:'Inter',Arial,sans-serif;background:var(--bg);color:var(--white);overflow:hidden;font-weight:400}
+#bg3d{position:fixed;inset:0;z-index:0;opacity:.5}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:4;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.dots{position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(rgba(174,182,194,.10) 1px,transparent 1px);background-size:26px 26px;z-index:1}
+.slide{position:absolute;inset:0;padding:26px 48px 96px;display:none;flex-direction:column;z-index:10}
+.slide.active{display:flex}
+.eyebrow-row{display:flex;align-items:center;gap:12px;border-bottom:1px dotted rgba(174,182,194,.35);padding-bottom:8px;margin-bottom:14px;flex:none}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;background:var(--chip);color:var(--silver);padding:5px 10px}
+.chip.blue{background:var(--blue);color:#fff}
+h1{font-size:6vw;line-height:1.04;font-weight:400;letter-spacing:-1px}
+h2{font-size:3.2vw;line-height:1.08;font-weight:400;margin-bottom:12px;letter-spacing:-.5px;flex:none}
+h1 .b,h2 .b{color:var(--blue)}
+.sub{color:var(--mut);font-size:1.2vw;line-height:1.55}
+.cols{display:flex;gap:20px;flex:1;min-height:0}
+.card{background:rgba(14,17,23,.85);border:1px dotted rgba(174,182,194,.25);padding:20px 24px;flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.card h3{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--silver);margin-bottom:14px;flex:none;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card h3 i{font-size:16px;color:var(--blue);flex:none}
+.card p,.card li{font-size:1.05vw;line-height:1.55;color:var(--light)}
+.card ul{padding-left:16px}
+.card li{margin-bottom:7px}
+.card li::marker{color:var(--blue)}
+.chartbox{flex:1;min-height:0;position:relative;margin-top:4px}
+.chartbox canvas{position:absolute;inset:4px}
+.num{font-size:3.2vw;font-weight:400;color:var(--white)}
+.num .b{color:var(--blue)}
+.num small{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-top:6px}
+.neg{color:#ff7b72}.pos{color:#7ee2a8}
+table{width:100%;border-collapse:collapse}
+th{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);padding:8px 10px;text-align:left;border-bottom:1px solid var(--blue)}
+td{padding:8px 10px;font-size:1.05vw;border-bottom:1px dotted rgba(174,182,194,.25);color:var(--light)}
+.mono{font-family:'IBM Plex Mono',monospace}
+.term{border-left:2px solid var(--blue);padding:8px 14px;margin:7px 0;font-size:1.05vw;line-height:1.5;color:var(--light);background:rgba(41,141,255,.06)}
+.term b{color:var(--blue);font-weight:500}
+.stamp{position:absolute;top:14px;right:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--blue);border:1px dotted rgba(41,141,255,.5);padding:4px 10px;cursor:pointer;z-index:20}
+#bar{position:fixed;bottom:0;left:0;right:0;height:72px;background:rgba(14,17,23,.95);border-top:1px dotted rgba(174,182,194,.35);display:flex;align-items:center;gap:12px;padding:0 20px;z-index:50}
+#bar button{background:var(--blue);border:0;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 13px;cursor:pointer}
+#bar button.ghost{background:transparent;border:1px dotted var(--blue);color:var(--blue)}
+audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
+#count{font-family:'IBM Plex Mono',monospace;color:var(--mut);font-size:12px;white-space:nowrap}
+.foot{flex:none;padding-top:10px;color:var(--mut);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase}
+.center{margin:auto;text-align:center;max-width:84vw;position:relative;z-index:2}
+.anim{opacity:0}
+.hid{visibility:hidden}
+.maplbl{background:#0E1117;border:1px solid #298DFF;color:#E0E2E6;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:1px;padding:2px 7px}
+.maplbl::before{display:none}
+@media(max-width:900px){h2{font-size:24px}.card p,.card li,td,.term{font-size:14px}.sub{font-size:14px}.num{font-size:30px}.cols{flex-direction:column}.slide{padding:20px 18px 84px}}
+</style>
+</head>
+<body>
+<canvas id="bg3d"></canvas>
+<div class="dots"></div>
+
+<section class="slide" data-t="0"><span class="stamp">00:00</span>
+<div class="center">
+<span class="chip anim">iLEARN · VISUAL EDITION · EP /04 · LISTENER LETTER</span>
+<h1 class="anim" style="margin-top:24px">$200k. Full time. Your own hands.<br><span class="b">How far does it go?</span></h1>
+<p class="sub anim" style="margin:18px auto 0;font-size:1.35vw">Mark in Edmond asks: 5-10 flips in 5 years in Oklahoma City?<br>Press play: the deck drives itself.</p>
+</div></section>
+
+<section class="slide" data-t="42"><span class="stamp">00:42</span>
+<div class="eyebrow-row"><span class="chip blue">THE SPOILER</span><span class="chip">/WE RAN THE NUMBERS</span></div>
+<h2 class="anim">Goal: 5-10 flips · model says <span class="b">14 is on the table</span></h2>
+<div class="cols">
+<div class="card anim" style="text-align:center;justify-content:center"><h3><i class="ti ti-target"></i>/MARK'S GOAL</h3><div class="num">5-10<small>flips in 5 years</small></div></div>
+<div class="card anim" style="text-align:center;justify-content:center"><h3><i class="ti ti-trending-up"></i>/THE MODEL</h3><div class="num"><span class="b">14</span><small>flips possible · salary paid the whole way</small></div></div>
+<div class="card anim" style="text-align:center;justify-content:center"><h3><i class="ti ti-alert-triangle"></i>/THE CATCH</h3><div class="num" style="font-size:1.8vw">One Oklahoma law<small>hits 2 of his 5 listed skills</small></div></div>
+</div></section>
+
+<section class="slide" data-t="69.6"><span class="stamp">01:10</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 1</span><span class="chip">/HUNTING GROUND · OKC METRO</span></div>
+<h2 class="anim">OKC: ~$260-280k median · <span class="b">4.5 months supply</span></h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-tag"></i>/MEDIAN SALE PRICE ($K, BY SOURCE)</h3><div class="chartbox"><canvas data-chart="c_med"></canvas></div></div>
+<div class="card anim"><h3><i class="ti ti-gauge"></i>/MONTHS OF SUPPLY VS EDMOND</h3><div class="chartbox"><canvas data-chart="c_supply"></canvas></div></div>
+<div class="card anim" style="flex:.7;text-align:center;justify-content:center"><h3><i class="ti ti-clock"></i>/DAYS ON MARKET</h3><div class="num">33-64<small>sources vary · buyer-leaning</small></div><p style="margin-top:12px;color:var(--blue);font-weight:500">Buyer-leaning = a gift on the way IN.</p></div>
+</div>
+<p class="foot">SOURCES: HOUZEO · REDFIN · ZILLOW /JUN 2026 — RANGES, NOT GOSPEL</p></section>
+
+<section class="slide" data-t="110.7"><span class="stamp">01:51</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 1</span><span class="chip">/THE FLIP BAND</span></div>
+<h2 class="anim">Buy $100-160k → finish at <span class="b">$200-260k</span></h2>
+<div class="cols">
+<div class="card anim" style="flex:1.4"><h3><i class="ti ti-arrows-horizontal"></i>/BUY BAND VS FINISHED BAND ($K)</h3><div class="chartbox"><canvas data-chart="c_band"></canvas></div></div>
+<div class="card anim"><h3><i class="ti ti-home"></i>/THE STOCK</h3><ul><li>Working-class OKC neighborhoods, 1960s-1990s houses</li><li>Renovations that ARE your skills: framing, drywall, paint</li><li>You live twenty minutes from thousands of them</li></ul></div>
+</div></section>
+
+<section class="slide" data-t="135.5"><span class="stamp">02:16</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 1</span><span class="chip">/PICKING THE BLOCK</span></div>
+<h2 class="anim">Consistent beats cheap: <span class="b">$230k with 3 flip comps</span> wins</h2>
+<div class="cols">
+<div class="card anim" style="flex:1.5;padding:10px"><div id="map" style="flex:1;min-height:0;border:1px dotted rgba(174,182,194,.25)"></div></div>
+<div class="card anim"><h3><i class="ti ti-map-search"></i>/THE RULE</h3><ul><li>Hunt blocks where renovated houses actually SELL at ~$230k: comps prove it</li><li>Have an agent pull every flipped sale in the metro, last 6 months: bought, renovated, resold within a year</li><li style="color:var(--blue)">That map IS the business plan. Zones shown are illustrative: your flip-comp pull decides.</li></ul></div>
+</div></section>
+
+<section class="slide" data-t="164.3"><span class="stamp">02:44</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 1</span><span class="chip">/THE REAL JOB</span></div>
+<h2 class="anim">Sourcing is the job: <span class="b">40 houses driven</span> beats 40 hours sanding</h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-car"></i>/DRIVE</h3><p>Daily routes. Tired roofs, tall grass, faded FSBO signs: write them all down.</p></div>
+<div class="card anim"><h3><i class="ti ti-users-group"></i>/NETWORK</h3><p>Every wholesaler list at OKC REIA. The deals find the people who show up.</p></div>
+<div class="card anim"><h3><i class="ti ti-search"></i>/WATCH + WRITE</h3><p>MLS listings sitting past 60 days, re-lists, letters to absentee owners in target zips.</p></div>
+<div class="card anim" data-at="204.8"><h3><i class="ti ti-truck"></i>/YOUR TRUCK</h3><p>Is now a marketing department. You're either a flipper or a very polite burglar: business cards help the neighbors tell the difference.</p></div>
+</div>
+<p class="foot">THE FLIP IS WON IN THE HUNT, WEEKS BEFORE THE HAMMER</p></section>
+
+<section class="slide" data-t="220.8"><span class="stamp">03:41</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 2</span><span class="chip">/YOUR EDGE, IN DOLLARS</span></div>
+<h2 class="anim">The deal: buy $120k · rehab $30k <span class="b">(your hands save $15k)</span></h2>
+<div class="cols">
+<div class="card anim" style="flex:1.4"><h3><i class="ti ti-hammer"></i>/RENOVATION COST: MARKET LABOR VS YOU ($K)</h3><div class="chartbox"><canvas data-chart="c_rehab"></canvas></div></div>
+<div class="card anim"><h3><i class="ti ti-list-check"></i>/YOU SELF-PERFORM</h3><p>Framing, drywall, paint, demo, trim.</p><h3 style="margin-top:14px"><i class="ti ti-license"></i>/IN THE $30K</h3><p>Materials + the licensed trades (section 4 explains why).</p><div class="num" style="margin-top:auto"><span class="b" data-count="15" data-pre="$" data-post="k">$0k</span><small>earned by your hands, per deal</small></div></div>
+</div></section>
+
+<section class="slide" data-t="251.4"><span class="stamp">04:11</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 2</span><span class="chip">/EDGE TWO: CASH</span></div>
+<h2 class="anim">$154k all-in, cash: <span class="b">~$10k of financing you never pay</span></h2>
+<div class="cols">
+<div class="card anim" style="flex:1.4"><h3><i class="ti ti-coins"></i>/SAME DEAL: CASH VS HARD MONEY ($K COST)</h3><div class="chartbox"><canvas data-chart="c_cash"></canvas></div></div>
+<div class="card anim"><h3><i class="ti ti-bolt"></i>/WHY CASH WINS TWICE</h3><ul><li>$120k buy + $30k rehab + ~$4k closing/carry = <b style="color:#fff">$154k all-in</b>, inside your $200k</li><li>No points, no 11% interest: the ~$10k stays yours</li><li>No-financing, two-week-close offers beat higher bids all the time</li></ul></div>
+</div></section>
+
+<section class="slide" data-t="285.1"><span class="stamp">04:45</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 2</span><span class="chip">/THE LEDGER</span></div>
+<h2 class="anim">$230k sale → <span class="b">$41k kept</span> after tax</h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-stairs-down"></i>/PER-FLIP WATERFALL ($K)</h3><div class="chartbox"><canvas data-chart="c_water"></canvas></div></div>
+</div>
+<p class="foot">NATIONAL CONTEXT: ~$65K AVG GROSS PER FLIP (ATTOM/CNBC) · YOUR NET IS STRONG BECAUSE LABOR + CASH KILL THE TWO BIGGEST COSTS</p></section>
+
+<section class="slide" data-t="325.8"><span class="stamp">05:26</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 2</span><span class="chip">/ESTIMATING</span></div>
+<h2 class="anim">Scope of work + <span class="b">10% contingency</span>: deals that don't wobble</h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-clipboard-list"></i>/BEFORE ANY OFFER</h3><ul><li>Walk it, write the scope: every room, every task, every material</li><li>Real materials takeoff: you know what a square of shingles costs</li><li>+10% contingency: every pre-1990 house hides exactly one surprise</li></ul></div>
+<div class="card anim" data-at="367.5"><h3><i class="ti ti-lock"></i>/THEN LOCK IT</h3><p>The four most expensive words in renovation: <b style="color:#fff">"while we're at it."</b></p><p style="margin-top:10px">Mid-project additions cost weeks, and your time is two flips a year.</p><p style="margin-top:10px;color:var(--blue);font-weight:500">Scope it. Price it. Finish it. Sell it.</p></div>
+</div></section>
+
+<section class="slide" data-t="395"><span class="stamp">06:35</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 2</span><span class="chip">/HARD TRUTH</span></div>
+<h2 class="anim">Your edge is your ceiling: <span class="b">2 flips/year</span> solo</h2>
+<div class="cols">
+<div class="card anim" style="flex:1.3"><h3><i class="ti ti-hourglass"></i>/ONE SOLO FLIP = ~5 MONTHS</h3><div class="chartbox"><canvas data-chart="c_ceiling"></canvas></div></div>
+<div class="card anim"><h3><i class="ti ti-calculator"></i>/THE MATH</h3><p>3-4 months of full-time renovation + 1-2 months to sell = ~5 months per flip, one at a time.</p><div class="num" style="margin-top:auto">2 flips<small>= ~$82k after tax · a good living, not 14 flips</small></div><p style="margin-top:10px;color:var(--blue)">Something changes in year two →</p></div>
+</div></section>
+
+<section class="slide" data-t="425.6"><span class="stamp">07:06</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 3</span><span class="chip">/THE LAW · AIMED AT THE TOOL BELT</span></div>
+<h2 class="anim">2 of your 5 skills are <span class="b">legally off-limits</span></h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-ban"></i>/OKLAHOMA RULE</h3><p>Electrical, plumbing, and mechanical permits are issued <b style="color:#fff">only to state-licensed contractors</b>.</p><p style="margin-top:10px">The owner-builder exemption explicitly does NOT cover those three trades, and flips aren't your own home anyway.</p></div>
+<div class="card anim"><h3><i class="ti ti-checklist"></i>/MARK'S FIVE SKILLS</h3><ul>
+<li class="pos">Framing — yours</li><li class="pos">Drywall — yours</li><li class="pos">Paint — yours</li>
+<li class="neg">Plumbing — licensed sub only</li><li class="neg">Electrical — licensed sub only</li></ul></div>
+</div>
+<p class="foot">SOURCES: CITY OF OKC PERMITTING · OK CONSTRUCTION INDUSTRIES BOARD — VERIFY CURRENT RULES BEFORE DEAL ONE</p></section>
+
+<section class="slide" data-t="461"><span class="stamp">07:41</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 3</span><span class="chip">/WHY IT MATTERS</span></div>
+<h2 class="anim">Unpermitted work = <span class="b">uninsured + unsellable</span></h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-flame"></i>/THE INSURANCE TRAP</h3><p>Unpermitted electrical or plumbing voids coverage on related losses. Your wire, no permit, a fire mid-rehab: the builder's risk policy can walk away.</p></div>
+<div class="card anim"><h3><i class="ti ti-home-x"></i>/THE RESALE TRAP</h3><p>The buyer's inspector WILL ask for permits on that new panel and repipe. Unpermitted work doesn't just risk fines: it un-sells the house.</p></div>
+</div></section>
+
+<section class="slide" data-t="490"><span class="stamp">08:10</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 3</span><span class="chip">/THE LEGAL PLAN</span></div>
+<h2 class="anim">Your hands on 5 trades · <span class="b">licensed subs on 3</span></h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-hammer"></i>/YOU SELF-PERFORM</h3><p>Framing · drywall · paint · trim · demo · flooring · cabinets</p></div>
+<div class="card anim"><h3><i class="ti ti-license"></i>/LICENSED + PERMITTED, ALWAYS</h3><p>Electrical · plumbing · HVAC (already inside the $30k rehab number)</p></div>
+<div class="card anim"><h3><i class="ti ti-certificate"></i>/LONG GAME</h3><p>Oklahoma has a licensing path: documented hours under a licensed contractor, then the exam. A year-plus project: build the business first.</p></div>
+</div></section>
+
+<section class="slide" data-t="536.1"><span class="stamp">08:56</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 3</span><span class="chip">/PERMITS, DEMYSTIFIED</span></div>
+<h2 class="anim">2 inspections per trade: <span class="b">rough-in, then final</span></h2>
+<div class="cols">
+<div class="card anim" style="flex:1.4"><h3><i class="ti ti-timeline"></i>/HOW IT FLOWS</h3>
+<table><tr><th>/STEP</th><th>/WHO</th><th>/RULE</th></tr>
+<tr><td>Permit pulled</td><td>Your licensed sub</td><td>Their license, their permit, City of OKC</td></tr>
+<tr><td>Rough-in inspection</td><td>City inspector</td><td>Walls stay OPEN until it passes</td></tr>
+<tr><td>You close walls</td><td>Mark</td><td>Drywall schedule follows the inspector</td></tr>
+<tr><td>Final inspection</td><td>City inspector</td><td>Green tag goes in the house folder</td></tr></table></div>
+<div class="card anim"><h3><i class="ti ti-folder"></i>/THE FOLDER</h3><p>Every permit and green tag, per house. When the buyer's inspector sees permitted work with passed finals, the negotiation gets friendlier. The folder is a selling tool.</p></div>
+</div></section>
+
+<section class="slide" data-t="575.3"><span class="stamp">09:35</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 4</span><span class="chip">/FIVE-YEAR PLAN · PHASE 1</span></div>
+<h2 class="anim">Year 1: two cash flips → <span class="b">~$82k after tax</span></h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-user"></i>/SOLO, ON PURPOSE</h3><ul><li>Two flips, your cash, your hands</li><li>Learning the OTHER half: sourcing, comps, permits, selling</li><li>Join OKC REIA before deal one: wholesalers, agents, future lenders, one room</li></ul></div>
+<div class="card anim" style="text-align:center;justify-content:center"><h3><i class="ti ti-cash"></i>/YEAR ONE BANKS</h3><div class="num"><span class="b" data-count="82" data-pre="~$" data-post="k">~$0k</span><small>after tax · 2 flips × ~$41k</small></div></div>
+</div></section>
+
+<section class="slide" data-t="606.2"><span class="stamp">10:06</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 4</span><span class="chip">/PHASE 2 · YEARS 2-3</span></div>
+<h2 class="anim">One helper at $18-25/hr → <span class="b">3 flips a year</span></h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-user-plus"></i>/WHY WAGES RAISE PROFIT</h3><p>Profit per flip dips a little; flips per year jump by half. A ~$40k/yr helper unlocks $40k+ of additional net.</p><p style="margin-top:10px;color:var(--blue);font-weight:500">People scale. Hammers don't.</p></div>
+<div class="card anim" data-at="636"><h3><i class="ti ti-checklist"></i>/THE HIRE</h3><ul><li>OKC rate: roughly $18-25/hr for a solid general laborer</li><li>Hire for reliability over skill: you can teach drywall, not showing up</li><li>One paid trial week on a real project before anything permanent</li></ul></div>
+<div class="card anim"><h3><i class="ti ti-arrows-split"></i>/TWO PROJECTS AT ONCE</h3><p>Your cash in one, borrowed money in the other. Still on the tools: now also managing.</p></div>
+</div></section>
+
+<section class="slide" data-t="659.4"><span class="stamp">10:59</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 4</span><span class="chip">/WHERE THE MONEY SITS</span></div>
+<h2 class="anim">$30k reserve never touches a deal: <span class="b">it's sacred</span></h2>
+<div class="cols">
+<div class="card anim" style="flex:1.3"><h3><i class="ti ti-chart-pie"></i>/THE $200K MAP ($K)</h3><div class="chartbox"><canvas data-chart="c_money"></canvas></div></div>
+<div class="card anim"><h3><i class="ti ti-pig-money"></i>/THE LOGIC</h3><ul><li>Reserve covers the surprise past contingency, the slow month, the truck</li><li>~$15k working room + first profits seed project two</li><li>When you need leverage: private money from the REIA room at 8-12%, secured by the house. Pay like clockwork: your reputation becomes your bank.</li></ul></div>
+</div></section>
+
+<section class="slide" data-t="708.5"><span class="stamp">11:49</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 4</span><span class="chip">/PHASE 3 + THE TOTALS</span></div>
+<h2 class="anim">14 flips possible · cash grows to <span class="b">~$457k</span> paying you $60k/yr</h2>
+<div class="cols">
+<div class="card anim" style="flex:1.5"><h3><i class="ti ti-chart-line"></i>/CUMULATIVE FLIPS (BARS) + BUSINESS CASH (LINE)</h3><div class="chartbox"><canvas data-chart="c_totals"></canvas></div></div>
+<div class="card anim" data-at="728"><h3><i class="ti ti-flag"></i>/MILESTONES</h3><ul><li>Goal of 5: passed in <b style="color:#fff">year 2</b></li><li>Goal of 10: passed in <b style="color:#fff">year 4</b></li><li>Years 4-5: crew lead swings, you GC: 3-4/yr</li></ul><p style="margin-top:auto;color:var(--blue);font-weight:500;font-size:1.2vw">"Your goal wasn't too ambitious, Mark. It was too humble."</p></div>
+</div></section>
+
+<section class="slide" data-t="748.4"><span class="stamp">12:28</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 5</span><span class="chip">/FIRST FLIP · MONTHS 1-2</span></div>
+<h2 class="anim">Month 1: drive 40, walk 6, offer 3, <span class="b">buy 1</span></h2>
+<div class="cols">
+<div class="card anim" style="flex:1.4"><h3><i class="ti ti-calendar"></i>/THE FUNNEL</h3><div class="chartbox"><canvas data-chart="c_funnel"></canvas></div></div>
+<div class="card anim"><h3><i class="ti ti-key"></i>/MONTH 2</h3><ul><li>Cash close in two weeks</li><li>Demo day one (drywall dust = your new cologne)</li><li>REIA electrician + plumber pull permits, get scheduled</li><li>Scope locked, materials ordered, 10% contingency waiting</li></ul></div>
+</div>
+<p class="foot">OFFERS AT YOUR 70%-MATH NUMBER · TWO NOS YOU DON'T CHASE · DISCIPLINE IS THE STRATEGY</p></section>
+
+<section class="slide" data-t="811"><span class="stamp">13:31</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 5</span><span class="chip">/FIRST FLIP · MONTHS 3-5</span></div>
+<h2 class="anim">5 months door to door → <span class="b">~$41k kept</span></h2>
+<div class="cols">
+<div class="card anim" style="flex:1.4"><h3><i class="ti ti-timeline-event"></i>/THE CALENDAR ($ FLOW BY MONTH)</h3><div class="chartbox"><canvas data-chart="c_months"></canvas></div></div>
+<div class="card anim"><h3><i class="ti ti-bulb"></i>/WHAT HAPPENED</h3><ul><li>Rough-ins pass → walls close → your fastest weeks</li><li>The surprise (bad sewer line) eats exactly the contingency: deal doesn't flinch</li><li>Lists Thursday AT comps ($230k) → contract first weekend</li><li style="color:var(--blue)">The calendar is the real budget: a saved week beats any tile upgrade</li></ul></div>
+</div></section>
+
+<section class="slide" data-t="864.4"><span class="stamp">14:24</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 6</span><span class="chip">/OPERATING SYSTEM</span></div>
+<h2 class="anim">Mondays for the business · <span class="b">1 sourcing hour daily</span></h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-calendar-week"></i>/THE WEEK</h3>
+<table><tr><th>/DAY</th><th>/WORK</th></tr>
+<tr><td>Mon AM</td><td>Comps, leads, offers, bills: business first</td></tr>
+<tr><td>Tue-Fri</td><td>On the project + 1 protected sourcing hour</td></tr>
+<tr><td>Sat AM</td><td>Showings + open-house recon in target zips</td></tr></table></div>
+<div class="card anim"><h3><i class="ti ti-alert-circle"></i>/WHY IT'S A RULE</h3><p>Sourcing is a trade you practice daily, like drywall. The flippers who fail usually renovated fine: they ran out of houses.</p></div>
+</div></section>
+
+<section class="slide" data-t="904.3"><span class="stamp">15:04</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 6</span><span class="chip">/THE BORING ARMOR</span></div>
+<h2 class="anim">LLC + books + <span class="b">3 kinds of insurance</span>, none optional</h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-building-bank"></i>/STRUCTURE</h3><p>Oklahoma LLC, its own bank account, bookkeeping from receipt one: the CPA turns the shoebox into tax savings, and dealer taxes take ~30% of every flip.</p></div>
+<div class="card anim"><h3><i class="ti ti-shield"></i>/COVERAGE</h3><p>Builder's risk + vacant-property on every project, general liability on the company, written agreements with every sub: even the ones you like.</p></div>
+</div></section>
+
+<section class="slide" data-t="934.2"><span class="stamp">15:34</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 6</span><span class="chip">/THE INSURANCE NOBODY MENTIONS</span></div>
+<h2 class="anim">You are the machine: <span class="b">one ladder fall stops all revenue</span></h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-user-heart"></i>/PROTECT THE ENGINE</h3><ul><li>A tradesman's back, knees, and hands ARE the model</li><li>Health insurance, yes: look hard at <b style="color:#fff">disability income insurance</b> too</li><li>Helper in year two → ask about workers comp obligations</li></ul></div>
+<div class="card anim" style="text-align:center;justify-content:center"><h3><i class="ti ti-engine"></i>/WORTH PROTECTING</h3><div class="num"><span class="b">14 flips</span><small>ride on the machine staying healthy</small></div></div>
+</div></section>
+
+<section class="slide" data-t="967.8"><span class="stamp">16:08</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 6</span><span class="chip">/THE EXIT</span></div>
+<h2 class="anim">Price AT comps day one: <span class="b">the first weekend is fame</span></h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-camera"></i>/EVERY TIME</h3><ul><li>Pro photos, always</li><li>Light staging: clean, bright, empty beats cluttered</li><li>Listing agent who knows YOUR neighborhoods: don't save the commission and sit 90 days</li></ul></div>
+<div class="card anim"><h3><i class="ti ti-bulb"></i>/THE PRINCIPLE</h3><p>You make the profit at the buy. You collect it at the sale. Full-timers get sloppy here because they're mentally on the next house: don't.</p></div>
+</div></section>
+
+<section class="slide" data-t="997.9"><span class="stamp">16:38</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 7</span><span class="chip">/PITFALLS 1-3</span></div>
+<h2 class="anim">Run numbers at <span class="b">market labor cost</span>, always</h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-calculator-off"></i>/01 FREE-LABOR TRAP</h3><p>If a deal only works because you work free, it's a bad deal renting your hands. Your sweat is extra profit, never the rescue plan.</p></div>
+<div class="card anim"><h3><i class="ti ti-clock-x"></i>/02 DIY TIME DRIFT</h3><p>Month four becomes month seven; carrying costs + lost deals eat the savings. Set a finish date per house, treat it like a contract.</p></div>
+<div class="card anim"><h3><i class="ti ti-diamond"></i>/03 OVER-RENOVATING</h3><p>Craftsman-grade everything is a temptation when you're skilled. Match the comps: the neighborhood sets the finish level, not your pride.</p></div>
+</div></section>
+
+<section class="slide" data-t="1042.6"><span class="stamp">17:23</span>
+<div class="eyebrow-row"><span class="chip blue">SECTION 7</span><span class="chip">/PITFALLS 4-7</span></div>
+<h2 class="anim">Burnout, hail, lifestyle creep, <span class="b">one-metro concentration</span></h2>
+<div class="cols">
+<div class="card anim"><h3><i class="ti ti-battery-off"></i>/04 + /05</h3><ul><li><b style="color:#fff">Burnout:</b> flipping + hammering is two jobs: the year-two helper is the firewall, not a luxury</li><li><b style="color:#fff">Oklahoma physics:</b> hail + roofs, clay soil + foundations, winterize vacants, taxes reassessed at YOUR price</li></ul></div>
+<div class="card anim"><h3><i class="ti ti-trending-down"></i>/06 + /07</h3><ul><li><b style="color:#fff">Salary trap:</b> every dollar above the $60k draw can't buy the next house: lifestyle creep is a silent partner who produces nothing</li><li><b style="color:#fff">Concentration:</b> by year 5, one asset class, one metro. Eyes open.</li></ul></div>
+</div></section>
+
+<section class="slide" data-t="1092.3"><span class="stamp">18:12</span>
+<div class="eyebrow-row"><span class="chip blue">/RECAP</span><span class="chip">/THE WHOLE EPISODE IN ONE MINUTE</span></div>
+<h2 class="anim">The plan: <span class="b">$120k → $230k</span>, 14 possible, machine insured</h2>
+<table class="anim">
+<tr><th>/PIECE</th><th>/THE NUMBER</th><th>/THE RULE</th></tr>
+<tr><td>Market</td><td class="mono">OKC · 4.5 mo supply</td><td>Buy ~$120k, finish ~$230k, comps prove the block</td></tr>
+<tr><td>Deal</td><td class="mono">~$41k kept/flip</td><td>Cash buy · $30k rehab · your hands save $15k</td></tr>
+<tr><td>Legal line</td><td class="mono">3 trades subbed</td><td>You: framing/drywall/paint · licensed: elec/plumb/HVAC</td></tr>
+<tr><td>Plan</td><td class="mono">2 → 3 → 3-4 per yr</td><td>Solo year 1 · helper years 2-3 · GC years 4-5</td></tr>
+<tr><td>Money</td><td class="mono">$200k → ~$457k</td><td>$30k reserve sacred · $60k/yr salary paid</td></tr>
+<tr><td>Ops</td><td class="mono">1 hr/day sourcing</td><td>Mondays for business · LLC + books + insure the machine</td></tr>
+<tr><td>Risks</td><td class="mono">Top 5</td><td>Illegal trades · free labor math · drift · gold-plating · uninsured injury</td></tr>
+</table></section>
+
+<section class="slide" data-t="1170.2"><span class="stamp">19:30</span>
+<div class="center">
+<span class="chip anim">/WISDOM FOR THE ROAD</span>
+<h2 class="anim" style="margin-top:22px;font-size:3.2vw">"All hard work brings a profit,<br>but mere talk leads only to poverty."<br><span class="b">— Proverbs 14:23</span></h2>
+<p class="sub anim" style="margin:20px auto 0;font-size:1.25vw">Your hands already know the work. Add the discipline of the numbers and the patience of the permits.<br>Pull the flip comps. Visit the REIA. Meet the electrician. The first house is waiting.</p>
+</div></section>
+
+<div id="bar">
+<button id="prev">◀</button>
+<span id="count">1 / 27</span>
+<button id="next">▶</button>
+<audio id="player" controls preload="metadata"></audio>
+<button id="sync" class="ghost">SYNC: ON</button>
+</div>
+
+<script>
+const BLUE='#298DFF',BLUE2='#1565C0',NAVY='#1B3A5C',SILVER='#AEB6C2',MUT='#67707E',LIGHT='#E0E2E6',RED='#ff7b72',GREEN='#7ee2a8',WHITE='#FFFFFF';
+if(window.Chart){
+if(window.ChartDataLabels)Chart.register(ChartDataLabels);
+Chart.defaults.color=MUT;Chart.defaults.font.family="'IBM Plex Mono',monospace";Chart.defaults.font.size=11;Chart.defaults.borderColor='rgba(174,182,194,.15)';
+Chart.defaults.set('plugins.datalabels',{display:false});
+Chart.defaults.layout={padding:{top:18,right:10}};
+}
+const DL={display:true,color:WHITE,font:{family:"'IBM Plex Mono',monospace",size:12,weight:500},anchor:'end',align:'start',offset:4};
+const DLtop={...DL,align:'end',offset:2,anchor:'end'};
+const NOLEG={legend:{display:false}};
+const mkChart={
+c_med:c=>new Chart(c,{type:'bar',data:{labels:['/HOUZEO','/REDFIN'],datasets:[{data:[259,280],backgroundColor:BLUE}]},options:{maintainAspectRatio:false,plugins:{...NOLEG,datalabels:{...DLtop,formatter:v=>'$'+v+'k'}},scales:{y:{min:200,max:300,ticks:{callback:v=>'$'+v+'k'},grid:{borderDash:[2,4]}},x:{grid:{display:false}}}}}),
+c_supply:c=>new Chart(c,{type:'bar',indexAxis:'y',data:{labels:['/EDMOND','/BALANCED','/OKC NOW'],datasets:[{data:[2.7,5,4.5],backgroundColor:[MUT,MUT,BLUE]}]},options:{maintainAspectRatio:false,plugins:{...NOLEG,datalabels:{...DL,align:'start',anchor:'end',formatter:v=>v+' MO'}},scales:{x:{max:6,title:{display:true,text:'MONTHS OF SUPPLY'},grid:{borderDash:[2,4]}},y:{grid:{display:false}}}}}),
+c_band:c=>new Chart(c,{type:'bar',indexAxis:'y',data:{labels:['/BUY BAND','/FINISHED BAND'],datasets:[{data:[[100,160],[200,260]],backgroundColor:[SILVER,BLUE]}]},options:{maintainAspectRatio:false,plugins:{...NOLEG,datalabels:{display:true,color:(x)=>x.dataIndex===0?'#0A0C10':WHITE,font:{family:"'IBM Plex Mono',monospace",size:12,weight:500},formatter:v=>'$'+v[0]+'-'+v[1]+'k'}},scales:{x:{min:80,max:280,ticks:{callback:v=>'$'+v+'k'},grid:{borderDash:[2,4]}},y:{grid:{display:false}}}}}),
+c_rehab:c=>new Chart(c,{type:'bar',data:{labels:['/MARKET LABOR','/MARK SELF-PERFORMS'],datasets:[{data:[45,30],backgroundColor:[MUT,BLUE]}]},options:{maintainAspectRatio:false,plugins:{...NOLEG,datalabels:{...DLtop,formatter:v=>'$'+v+'k'}},scales:{y:{max:52,ticks:{callback:v=>'$'+v+'k'},grid:{borderDash:[2,4]}},x:{grid:{display:false}}}}}),
+c_cash:c=>new Chart(c,{type:'bar',data:{labels:['/CASH PURCHASE','/HARD MONEY'],datasets:[{data:[0,10],backgroundColor:[GREEN,RED]}]},options:{maintainAspectRatio:false,plugins:{...NOLEG,datalabels:{...DLtop,formatter:v=>v===0?'$0':'~$'+v+'k'}},scales:{y:{max:12,title:{display:true,text:'FINANCING COST $K'},grid:{borderDash:[2,4]}},x:{grid:{display:false}}}}}),
+c_water:c=>new Chart(c,{type:'bar',data:{labels:['/SALE PRICE','/BUY','/REHAB','/CLOSE+CARRY','/SELLING','/PRE-TAX','/TAX ~30%','/KEPT'],datasets:[{data:[[0,230],[110,230],[80,110],[76,80],[59,76],[0,59],[41,59],[0,41]],backgroundColor:[BLUE,SILVER,SILVER,SILVER,MUT,NAVY,RED,GREEN]}]},options:{maintainAspectRatio:false,plugins:{...NOLEG,datalabels:{...DLtop,formatter:v=>'$'+Math.round(v[1]-v[0])+'k'},tooltip:{callbacks:{label:x=>'$'+(x.raw[1]-x.raw[0]).toFixed(0)+'k'}}},scales:{y:{max:255,ticks:{callback:v=>'$'+v+'k'},grid:{borderDash:[2,4]}},x:{grid:{display:false}}}}}),
+c_ceiling:c=>new Chart(c,{type:'bar',indexAxis:'y',data:{labels:['/HUNT + CLOSE','/RENOVATE (YOU)','/SELL + CLOSE'],datasets:[{data:[1,3.5,1.5],backgroundColor:[SILVER,BLUE,NAVY]}]},options:{maintainAspectRatio:false,plugins:{...NOLEG,datalabels:{...DL,align:'start',anchor:'end',color:(x)=>x.dataIndex===0?'#0A0C10':WHITE,formatter:v=>v+' MO'}},scales:{x:{max:4,title:{display:true,text:'MONTHS'},grid:{borderDash:[2,4]}},y:{grid:{display:false}}}}}),
+c_money:c=>new Chart(c,{type:'doughnut',data:{labels:['/RESERVE','/DEAL 1 ALL-IN','/WORKING ROOM'],datasets:[{data:[30,154,16],backgroundColor:[RED,BLUE,SILVER],borderWidth:0}]},options:{maintainAspectRatio:false,layout:{padding:14},plugins:{legend:{position:'right',labels:{boxWidth:10,padding:14}},datalabels:{display:true,color:(x)=>x.dataIndex===2?'#0A0C10':WHITE,font:{family:"'IBM Plex Mono',monospace",size:12,weight:500},formatter:v=>'$'+v+'k'}}}}),
+c_totals:c=>new Chart(c,{data:{labels:['/Y1','/Y2','/Y3','/Y4','/Y5'],datasets:[{type:'bar',label:'CUMULATIVE FLIPS',data:[2,5,8,11,14],backgroundColor:BLUE,yAxisID:'y',datalabels:{...DLtop,formatter:v=>v}},{type:'line',label:'BUSINESS CASH $K',data:[222,284,344,401,457],borderColor:SILVER,backgroundColor:SILVER,pointRadius:4,yAxisID:'y2',datalabels:{display:true,color:SILVER,align:'top',offset:6,formatter:v=>'$'+v+'k'}}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10}},datalabels:{display:true}},scales:{y:{position:'left',title:{display:true,text:'FLIPS'},max:16,grid:{borderDash:[2,4]}},y2:{position:'right',title:{display:true,text:'CASH $K'},grid:{display:false},min:0,max:520},x:{grid:{display:false}}}}}),
+c_funnel:c=>new Chart(c,{type:'bar',data:{labels:['/DRIVEN','/WALKED','/SCOPED','/OFFERS','/BOUGHT'],datasets:[{data:[40,6,4,3,1],backgroundColor:[MUT,SILVER,SILVER,NAVY,BLUE]}]},options:{maintainAspectRatio:false,plugins:{...NOLEG,datalabels:{...DLtop,formatter:v=>v}},scales:{y:{max:46,title:{display:true,text:'HOUSES'},grid:{borderDash:[2,4]}},x:{grid:{display:false}}}}}),
+c_months:c=>new Chart(c,{type:'bar',data:{labels:['/M1 HUNT','/M2 CLOSE+DEMO','/M3 TRADES','/M4 FINISH','/M5 SELL'],datasets:[{label:'CASH OUT',data:[-2,-126,-14,-12,0],backgroundColor:RED,datalabels:{display:true,color:RED,anchor:'start',align:'start',offset:2,formatter:v=>v?'-$'+Math.abs(v)+'k':''}},{label:'CASH IN',data:[0,0,0,0,213],backgroundColor:GREEN,datalabels:{display:true,color:GREEN,anchor:'end',align:'end',offset:2,formatter:v=>v?'+$'+v+'k':''}}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10}}},scales:{y:{ticks:{callback:v=>'$'+v+'k'},grid:{borderDash:[2,4]}},x:{stacked:true,grid:{display:false}}}}})
+};
+const charts={};
+function initCharts(slide){slide.querySelectorAll('canvas[data-chart]').forEach(cv=>{const id=cv.dataset.chart;if(charts[id]){charts[id].destroy();}if(window.Chart&&mkChart[id]){charts[id]=mkChart[id](cv);}});}
+function countUps(slide){slide.querySelectorAll('[data-count]').forEach(el=>{const target=parseFloat(el.dataset.count),dec=parseInt(el.dataset.dec||0),pre=el.dataset.pre||'',post=el.dataset.post||'';const o={v:0};if(window.gsap){gsap.to(o,{v:target,duration:1.2,ease:'power2.out',onUpdate:()=>{el.textContent=pre+o.v.toFixed(dec)+post;}});}else{el.textContent=pre+target.toFixed(dec)+post;}});}
+function animateIn(slide){if(!window.gsap)return;gsap.fromTo(slide.querySelectorAll('.anim,h2,.card,table'),{opacity:0,y:24},{opacity:1,y:0,duration:.55,stagger:.08,ease:'power2.out',overwrite:true});}
+const slides=[...document.querySelectorAll('.slide')];
+const times=slides.map(s=>parseFloat(s.dataset.t||0));
+let cur=-1,sync=true;
+const player=document.getElementById('player');
+player.src="../episodes/04-okc-flipper-plan.mp3";
+player.onerror=()=>{player.onerror=null;player.src="https://dumbsaucey.github.io/ilearn-podcast/episodes/04-okc-flipper-plan.mp3";};
+function applyReveals(){const s=slides[cur];if(!s)return;s.querySelectorAll('[data-at]').forEach(el=>{const at=parseFloat(el.dataset.at);if(!sync||player.currentTime>=at){if(el.classList.contains('hid')){el.classList.remove('hid');if(window.gsap)gsap.fromTo(el,{opacity:0,y:14},{opacity:1,y:0,duration:.4,overwrite:true});}}else{el.classList.add('hid');}});}
+let mapObj=null;
+function ensureMap(){const el=document.getElementById('map');if(!el||!window.L)return;if(!mapObj){mapObj=L.map('map',{zoomControl:false,attributionControl:true}).setView([35.44,-97.5],10);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:19}).addTo(mapObj);L.circle([35.39,-97.53],{radius:6000,color:'#298DFF',weight:2,fillColor:'#298DFF',fillOpacity:.15}).addTo(mapObj).bindTooltip('ILLUSTRATIVE TARGET ZONE · S. OKC',{permanent:true,direction:'top',className:'maplbl'});L.circle([35.49,-97.42],{radius:5000,color:'#AEB6C2',weight:2,dashArray:'4 7',fill:false}).addTo(mapObj).bindTooltip('ILLUSTRATIVE ZONE · NE CORRIDOR',{permanent:true,direction:'bottom',className:'maplbl'});L.marker([35.6529,-97.4779]).addTo(mapObj).bindTooltip('EDMOND · HOME BASE',{permanent:true,direction:'right',className:'maplbl'});}
+setTimeout(()=>mapObj.invalidateSize(),60);}
+function show(i){i=Math.max(0,Math.min(slides.length-1,i));if(i===cur)return;cur=i;slides.forEach((s,j)=>s.classList.toggle('active',j===cur));document.getElementById('count').textContent=(cur+1)+" / "+slides.length;const s=slides[cur];requestAnimationFrame(()=>{initCharts(s);animateIn(s);countUps(s);applyReveals();if(s.querySelector('#map'))ensureMap();});}
+document.getElementById('prev').onclick=()=>show(cur-1);
+document.getElementById('next').onclick=()=>show(cur+1);
+document.getElementById('sync').onclick=function(){sync=!sync;this.textContent="SYNC: "+(sync?"ON":"OFF");};
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')show(cur+1);if(e.key==='ArrowLeft')show(cur-1);});
+player.addEventListener('timeupdate',()=>{if(sync){let t=player.currentTime,i=0;for(let j=0;j<times.length;j++){if(t>=times[j])i=j;}if(i!==cur)show(i);}applyReveals();});
+slides.forEach(s=>{const st=s.querySelector('.stamp');if(st)st.onclick=()=>{player.currentTime=parseFloat(s.dataset.t);player.play();};});
+show(0);
+if(window.THREE){
+const cvs=document.getElementById('bg3d');
+const renderer=new THREE.WebGLRenderer({canvas:cvs,alpha:true,antialias:true});
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,100);
+cam.position.set(0,0,16);
+function rs(){renderer.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();}
+rs();addEventListener('resize',rs);
+const bars=new THREE.Group();
+for(let i=0;i<54;i++){
+const h=1+Math.random()*7;
+const m=new THREE.Mesh(new THREE.BoxGeometry(.32,h,.32),new THREE.MeshBasicMaterial({color:Math.random()<.5?0x298DFF:0x10243E,transparent:true,opacity:.10+Math.random()*.14}));
+m.position.set((Math.random()-.5)*34,(Math.random()-.5)*16,-4-Math.random()*10);
+m.userData={s:.2+Math.random()*.5,p:Math.random()*Math.PI*2};
+bars.add(m);}
+scene.add(bars);
+const clock=new THREE.Clock();
+(function tick(){const t=clock.getElapsedTime();bars.children.forEach(b=>{b.position.y+=Math.sin(t*b.userData.s+b.userData.p)*.004;b.scale.y=1+Math.sin(t*b.userData.s+b.userData.p)*.12;});bars.rotation.y=Math.sin(t*.04)*.06;renderer.render(scene,cam);requestAnimationFrame(tick);})();
+}
+</script>
+</body>
+</html>
