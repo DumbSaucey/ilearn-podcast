@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>iLearn</title>
+    <link>https://dumbsaucey.github.io/ilearn-podcast/</link>
+    <atom:link href="https://dumbsaucey.github.io/ilearn-podcast/feed.xml" rel="self" type="application/rss+xml"/>
+    <language>en-us</language>
+    <description>A personal learning podcast. Two hosts go deep on business, real estate, AI, philosophy, and the ideas worth understanding: built to survive your follow-up questions, with a little wisdom on the way out.</description>
+    <itunes:author>iLearn</itunes:author>
+    <itunes:summary>Two hosts go deep on business, real estate, AI, philosophy, and the ideas worth understanding.</itunes:summary>
+    <itunes:image href="https://dumbsaucey.github.io/ilearn-podcast/cover.jpg"/>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:category text="Education">
+      <itunes:category text="Self-Improvement"/>
+    </itunes:category>
+    <item>
+      <title>Reading the Housing Market: When to Buy, When to Sell</title>
+      <description>The three-number scoreboard that tells you whether any zip code favors buyers or sellers: months of supply, days on market, and sale-to-list with price cuts. Why each works, where to find it, the traps inside it, and a flip example where ignoring the numbers costs twenty five thousand dollars. Closes with Proverbs 24:27.</description>
+      <pubDate>Fri, 12 Jun 2026 14:00:00 GMT</pubDate>
+      <guid isPermaLink="false">ilearn-2026-06-12-housing-market-signals</guid>
+      <enclosure url="https://dumbsaucey.github.io/ilearn-podcast/episodes/2026-06-12-housing-market-signals.mp3" length="8936420" type="audio/mpeg"/>
+      <itunes:duration>558</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>How to Value a Small Business (ETA Deep-Dive)</title>
+      <description>Entrepreneurship through acquisition, from the ground floor to the bank's underwriting desk: SDE, add-backs, why the multiple is a risk score, DSCR, and a worked example buying a plumbing company with current SBA rules. Closes with Luke 14:28 on counting the cost.</description>
+      <pubDate>Fri, 12 Jun 2026 12:00:00 GMT</pubDate>
+      <guid isPermaLink="false">ilearn-2026-06-12-eta-valuation</guid>
+      <enclosure url="https://dumbsaucey.github.io/ilearn-podcast/episodes/2026-06-12-eta-valuation.mp3" length="6903465" type="audio/mpeg"/>
+      <itunes:duration>431</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+  </channel>
+</rss>
