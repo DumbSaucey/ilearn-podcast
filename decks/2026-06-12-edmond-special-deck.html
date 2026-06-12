@@ -11,6 +11,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 :root{--bg:#0A0C10;--chip:#1A1E26;--blue:#298DFF;--navy:#10243E;--silver:#AEB6C2;--mut:#67707E;--white:#FFFFFF;--light:#E0E2E6}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -56,7 +58,11 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 .foot{flex:none;padding-top:10px;color:var(--mut);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase}
 .center{margin:auto;text-align:center;max-width:80vw;position:relative;z-index:2}
 .anim{opacity:0}
+.hid{visibility:hidden}
 @media(max-width:900px){h2{font-size:24px}.card p,.card li,td,.term{font-size:14px}.sub{font-size:14px}.num{font-size:30px}.cols{flex-direction:column}.slide{padding:20px 18px 84px}}
+.maplbl{background:#0E1117;border:1px solid #298DFF;color:#E0E2E6;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:1px;padding:2px 7px}
+.maplbl::before{display:none}
+#map .leaflet-container{background:#0A0C10}
 </style>
 </head>
 <body>
@@ -71,7 +77,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="48"><span class="stamp">00:48</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 1</span><span class="chip">/THE BUSINESS</span></div>
-<h2 class="anim">Two businesses, <span class="b">one jacket</span></h2>
+<h2 class="anim">Two businesses: <span class="b">~$30k</span> flips fund <span class="b">~$70k</span> holds</h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-hammer"></i>/FLIPPING → INCOME</h3><p>Buy distressed → renovate → sell. Cash lands in months. The engine.</p><div class="num" style="margin-top:auto"><span data-count="30" data-pre="~$" data-post="k">~$0k</span><small>kept per flip · after tax</small></div></div>
 <div class="card anim"><h3><i class="ti ti-home-dollar"></i>/HOLDING → WEALTH</h3><p>Buy → renovate → rent → refinance (BRRRR). The 5-10 property goal lives here.</p><div class="num" style="margin-top:auto"><span class="b" data-count="70" data-pre="~$" data-post="k">~$0k</span><small>equity banked per door</small></div></div>
@@ -80,7 +86,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="81"><span class="stamp">01:21</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 1</span><span class="chip">/THE CITY · JUN 2026</span></div>
-<h2 class="anim">Edmond snapshot</h2>
+<h2 class="anim">Edmond: ~$390k median · <span class="b">2.7 months</span> supply</h2>
 <div class="cols">
 <div class="card anim" style="flex:1.4"><h3><i class="ti ti-tag"></i>/MEDIAN SALE PRICE BY SOURCE ($K)</h3><div class="chartbox"><canvas data-chart="c_median"></canvas></div></div>
 <div class="card anim"><h3><i class="ti ti-clock"></i>/DAYS ON MARKET · YOY</h3><div class="chartbox"><canvas data-chart="c_dom"></canvas></div></div>
@@ -90,31 +96,26 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="120"><span class="stamp">02:00</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 1</span><span class="chip">/READING IT</span></div>
-<h2 class="anim">Cooling, but still tight</h2>
+<h2 class="anim">2.7 months: <span class="b">cooling, but still tight</span></h2>
 <div class="cols">
 <div class="card anim" style="flex:1.3"><h3><i class="ti ti-gauge"></i>/SUPPLY GAUGE · MONTHS</h3><div class="chartbox"><canvas data-chart="c_supply"></canvas></div></div>
 <div class="card anim"><h3><i class="ti ti-thumb-up"></i>/GOOD NEWS</h3><p>Demand for finished homes is real. When your flip is done, buyers show up.</p><h3 style="margin-top:16px">/HARD TRUTH 01</h3><p>Tight supply = scarce discounts. Flat prices = no bailout.</p><p style="margin-top:12px;color:var(--blue);font-weight:500;font-size:1.3vw">You make your money the day you buy.</p></div>
 </div></section>
 
 <section class="slide" data-t="155"><span class="stamp">02:35</span>
-<div class="eyebrow-row"><span class="chip blue">LAYER 1</span><span class="chip">/THE MAP</span></div>
-<h2 class="anim">The bullseye</h2>
+<div class="eyebrow-row"><span class="chip blue">LAYER 1</span><span class="chip">/THE MAP · EDMOND, OK</span></div>
+<h2 class="anim">The bullseye: flips in Edmond, <span class="b">rentals one ring out</span></h2>
 <div class="cols">
-<div class="card anim" style="display:flex;align-items:center;justify-content:center">
-<svg viewBox="0 0 360 250" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
-<circle cx="180" cy="125" r="110" fill="none" stroke="#AEB6C2" stroke-width="1.5" stroke-dasharray="2 6"/>
-<circle cx="180" cy="125" r="60" fill="rgba(41,141,255,.12)" stroke="#298DFF" stroke-width="1.5"/>
-<text x="180" y="119" fill="#298DFF" font-size="13" text-anchor="middle">EDMOND PROPER</text>
-<text x="180" y="137" fill="#E0E2E6" font-size="10" text-anchor="middle">FLIPS · PREMIUM BUYERS</text>
-<text x="180" y="28" fill="#AEB6C2" font-size="11" text-anchor="middle">/THE RING · RENTALS</text>
-<text x="180" y="240" fill="#67707E" font-size="10" text-anchor="middle">N. OKC · GUTHRIE CORRIDORS · BETTER RENT RATIOS</text>
-</svg></div>
-<div class="card anim"><h3><i class="ti ti-map-pin"></i>/RENT-TO-PRICE BY ZONE (MONTHLY RENT PER $100K)</h3><div class="chartbox"><canvas data-chart="c_zone"></canvas></div></div>
+<div class="card anim" style="flex:1.5;padding:10px"><div id="map" style="flex:1;min-height:0;border:1px dotted rgba(174,182,194,.25)"></div></div>
+<div class="card anim"><h3><i class="ti ti-target"></i>/WHY SPLIT IT</h3><ul>
+<li><b style="color:#fff">Edmond proper (blue zone):</b> older central neighborhoods near downtown/UCO = renovation-grade stock. Sell finished homes at premium.</li>
+<li><b style="color:#fff">The ring (dashed):</b> N. OKC + Guthrie corridors: lower prices, similar tenant demand → rental math breathes.</li>
+<li>Ask your agent for 6 months of flipped sales by zip: the map of where investors already win.</li></ul></div>
 </div></section>
 
-<section class="slide" data-t="190"><span class="stamp">03:10</span>
+<section class="slide" data-t="188.2"><span class="stamp">03:08</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 2</span><span class="chip">/THE DEAL</span></div>
-<h2 class="anim">Pricing backward from <span class="b">ARV</span></h2>
+<h2 class="anim">$330k ARV − $50k repairs → buy at <span class="b">$190k</span></h2>
 <div class="cols">
 <div class="card anim" style="flex:1.4"><h3><i class="ti ti-building-warehouse"></i>/THE EXAMPLE DEAL · STACKED ($K)</h3><div class="chartbox"><canvas data-chart="c_arv"></canvas></div></div>
 <div class="card anim">
@@ -125,7 +126,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="250"><span class="stamp">04:09</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 2</span><span class="chip">/THE MONEY</span></div>
-<h2 class="anim">Hard money, explained</h2>
+<h2 class="anim">Hard money: <span class="b">9.5-15%</span> + points</h2>
 <div class="cols">
 <div class="card anim" style="flex:1.4"><h3>/COST OF MONEY · RATE RANGES %</h3><div class="chartbox"><canvas data-chart="c_rates"></canvas></div></div>
 <div class="card anim"><h3><i class="ti ti-settings"></i>/HOW IT WORKS</h3><ul><li>Short-term, secured by the property: banks won't touch wrecks</li><li><b style="color:#fff">Points</b> = 1% of loan each, upfront</li><li>Funds ~85% of purchase + 100% of rehab</li><li>Rehab paid in <b style="color:#fff">draws</b> as work passes inspection</li></ul></div>
@@ -134,7 +135,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="286"><span class="stamp">04:45</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 2</span><span class="chip">/THE LEDGER</span></div>
-<h2 class="anim">Where the $90k goes</h2>
+<h2 class="anim">$90k gross shrinks to <span class="b">~$30k kept</span></h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-stairs-down"></i>/FLIP PROFIT WATERFALL ($K)</h3><div class="chartbox"><canvas data-chart="c_waterfall"></canvas></div></div>
 </div>
@@ -142,7 +143,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="360"><span class="stamp">05:59</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 2</span><span class="chip">/HOLDING</span></div>
-<h2 class="anim">BRRRR + DSCR</h2>
+<h2 class="anim">BRRRR: <span class="b">~$35k stays trapped</span> per door</h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-refresh"></i>/THE CYCLE</h3><div style="flex:1;display:flex;align-items:center;justify-content:center">
 <svg viewBox="0 0 300 200" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
@@ -161,7 +162,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="400"><span class="stamp">06:39</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 2</span><span class="chip">/MOMENT OF TRUTH</span></div>
-<h2 class="anim">The <span class="b">Edmond problem</span></h2>
+<h2 class="anim">The Edmond problem: <span class="b">−$180/month</span> per door</h2>
 <div class="cols">
 <div class="card anim" style="flex:1.4"><h3><i class="ti ti-scale"></i>/MONTHLY: RENT VS COSTS ($)</h3><div class="chartbox"><canvas data-chart="c_cashflow"></canvas></div></div>
 <div class="card anim"><h3><i class="ti ti-bulb"></i>/THE REFRAME</h3>
@@ -170,9 +171,9 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 <p style="margin-top:10px;color:var(--blue);font-weight:500;font-size:1.25vw">This is an EQUITY plan, not an income plan.</p></div>
 </div></section>
 
-<section class="slide" data-t="485"><span class="stamp">08:05</span>
+<section class="slide" data-t="483.3"><span class="stamp">08:03</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 3</span><span class="chip">/PLAYBOOK</span></div>
-<h2 class="anim">Days 1-90</h2>
+<h2 class="anim">Days 1-90: <span class="b">0 employees</span>, a 10-vendor team</h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-building-bank"></i>/DAYS 1-30 · INFRASTRUCTURE</h3><ul><li>Oklahoma LLC + EIN</li><li>Business banking + bookkeeping</li><li>Real-estate CPA, before deal #1</li><li>Book the first OKC trip</li></ul></div>
 <div class="card anim"><h3><i class="ti ti-users"></i>/DAYS 30-90 · TEAM (0 EMPLOYEES)</h3><ul><li>Investor agent · 2-3 wholesalers</li><li>GC + backup · HM + DSCR lenders</li><li>Title/abstract co · insurance broker</li><li>Property manager · structural engineer</li></ul></div>
@@ -181,7 +182,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="578"><span class="stamp">09:38</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 3</span><span class="chip">/RELATIONSHIPS</span></div>
-<h2 class="anim">Where the team comes from</h2>
+<h2 class="anim">One room builds the team: <span class="b">OKC REIA</span></h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-users-group"></i>/OKC REIA</h3><p>Oklahoma City Real Estate Investors Association: okcreia.com. Agents, wholesalers, lenders, contractors, and future private-money partners, one room.</p><p style="margin-top:auto;color:var(--blue);font-weight:500;font-size:1.2vw">Join before you buy anything.</p></div>
 <div class="card anim"><h3><i class="ti ti-eye"></i>/PROPERTY MANAGERS = FREE INTEL</h3><p>Interview Edmond PM firms: "Which contractor and agent would you use for your own money?" They see every investor's mistakes.</p></div>
@@ -189,7 +190,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="620"><span class="stamp">10:20</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 3</span><span class="chip">/OPERATING SYSTEM</span></div>
-<h2 class="anim">The per-deal SOP</h2>
+<h2 class="anim">The <span class="b">7-step</span> per-deal SOP</h2>
 <table class="anim">
 <tr><th>/#</th><th>/STEP</th><th>/DISCIPLINE</th></tr>
 <tr><td class="mono">01</td><td>Deal in (wholesaler / agent)</td><td>Never trust the seller's numbers</td></tr>
@@ -203,7 +204,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="670"><span class="stamp">11:10</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 3</span><span class="chip">/CAPITAL</span></div>
-<h2 class="anim">Deploying the $200k</h2>
+<h2 class="anim">$200k deployed: <span class="b">$30k reserve stays sacred</span></h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-chart-pie"></i>/ALLOCATION ($K)</h3><div class="chartbox"><canvas data-chart="c_deploy"></canvas></div></div>
 <div class="card anim" style="flex:.7"><h3><i class="ti ti-calendar"></i>/YEAR ONE SHAPE</h3><ul><li><b style="color:#ff7b72">$30k reserve is sacred</b>: never deal money</li><li>Two flips running, staggered</li><li>One hold seasoning</li><li>Deliberately under capacity: learn cheap</li></ul></div>
@@ -211,7 +212,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="700"><span class="stamp">11:40</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 3</span><span class="chip">/HUNTING GROUND</span></div>
-<h2 class="anim">Where to hunt + what $50k buys</h2>
+<h2 class="anim">$50k scope: <span class="b">$25-30k cosmetic + $20k mechanical</span></h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-map-search"></i>/FLIP COUNTRY</h3><p>Older central Edmond near downtown/UCO: dated 3-beds next to remodeled comps. Skip the newer additions: nothing to fix.</p></div>
 <div class="card anim" style="flex:1.3"><h3><i class="ti ti-paint"></i>/$50K RENOVATION SCOPE ($K)</h3><div class="chartbox"><canvas data-chart="c_scope"></canvas></div></div>
@@ -220,18 +221,18 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="802"><span class="stamp">13:22</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 3</span><span class="chip">/THE HONEST FLAG</span></div>
-<h2 class="anim">You don't <span class="b">live there</span></h2>
+<h2 class="anim">Risk #1: <span class="b">you don't live there</span></h2>
 <p class="sub anim" style="flex:none">Remote flipping as a first-timer is the hardest version of this business. Contractors behave differently when the owner is a thousand miles away.</p>
 <div class="cols" style="margin-top:16px">
-<div class="card anim"><h3><i class="ti ti-plane"></i>/OPTION 01</h3><p>Be there a week+ per month, especially during renovations.</p></div>
-<div class="card anim"><h3><i class="ti ti-heart-handshake"></i>/OPTION 02</h3><p>Local operating partner, split the deals.</p></div>
-<div class="card anim"><h3><i class="ti ti-user-plus"></i>/OPTION 03</h3><p>Year 2-3 hire: local acquisitions/project manager, base + per-deal cut.</p></div>
+<div class="card anim" data-at="814"><h3><i class="ti ti-plane"></i>/OPTION 01</h3><p>Be there a week+ per month, especially during renovations.</p></div>
+<div class="card anim" data-at="822"><h3><i class="ti ti-heart-handshake"></i>/OPTION 02</h3><p>Local operating partner, split the deals.</p></div>
+<div class="card anim" data-at="829"><h3><i class="ti ti-user-plus"></i>/OPTION 03</h3><p>Year 2-3 hire: local acquisitions/project manager, base + per-deal cut.</p></div>
 </div>
 <p class="foot" style="color:var(--blue)">UNTIL ONE IS TRUE: ONE PROJECT AT A TIME, NOT TWO</p></section>
 
-<section class="slide" data-t="848"><span class="stamp">14:08</span>
+<section class="slide" data-t="846"><span class="stamp">14:06</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 4</span><span class="chip">/THE MODEL</span></div>
-<h2 class="anim">Five years: doors up, <span class="b">cash down</span></h2>
+<h2 class="anim">Year 5: <span class="b">10 doors, ~$700k equity</span>, cash ~$175k</h2>
 <div class="cols">
 <div class="card anim" style="flex:1.6"><h3><i class="ti ti-chart-line"></i>/DOORS (BARS) VS YEAR-END CASH (LINE)</h3><div class="chartbox"><canvas data-chart="c_model"></canvas></div></div>
 <div class="card anim"><h3><i class="ti ti-eye-search"></i>/READ IT</h3><p>Every hold traps ~$35-40k forever. Flips net ~$30k each after tax.</p><p style="margin-top:10px;color:var(--blue);font-weight:500">Year 3-4: the predictable capital crunch.</p><div class="num" style="margin-top:auto"><span data-count="700" data-pre="~$" data-post="k">~$0k</span><small>equity at year 5 · before appreciation</small></div></div>
@@ -239,36 +240,36 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="918"><span class="stamp">15:18</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 4</span><span class="chip">/RAISING CAPITAL</span></div>
-<h2 class="anim">The ladder</h2>
+<h2 class="anim">Raising money: <span class="b">8-12% notes</span> → 50/50 JVs</h2>
 <div class="cols">
 <div class="card anim" style="flex:1.4"><h3><i class="ti ti-coins"></i>/ANNUAL COST OF CAPITAL · %</h3><div class="chartbox"><canvas data-chart="c_ladder"></canvas></div></div>
 <div class="card anim"><h3><i class="ti ti-gavel"></i>/RULES</h3><ul><li>Private money: note + recorded mortgage + named on insurance</li><li>JV 50/50 also solves boots-on-ground</li><li>Syndication at 10 houses: a howitzer for a rabbit</li><li style="color:var(--blue)">Raised money goes into deals only. One sloppy deal ends it.</li></ul></div>
 </div></section>
 
-<section class="slide" data-t="1022"><span class="stamp">17:02</span>
+<section class="slide" data-t="1019.9"><span class="stamp">17:00</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 5</span><span class="chip">/SHORTFALLS 01-04</span></div>
-<h2 class="anim">Where this plan breaks</h2>
+<h2 class="anim">Shortfalls 1-4: <span class="b">−$20k/yr</span> at ten doors</h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-trending-down"></i>/01 NEGATIVE CASH FLOW</h3><p>10 doors ≈ <span class="neg mono">−$20k/yr</span> with management. Mitigate: cheaper ring, bigger down payments, or wait out rates.</p></div>
 <div class="card anim"><h3><i class="ti ti-map-off"></i>/02 REMOTE RISK</h3><p>Contractor drift/fraud is how new flippers lose $50k. Presence, partner, or hire.</p></div>
-<div class="card anim"><h3><i class="ti ti-filter"></i>/03 DEAL FLOW</h3><p>At 2.7 months supply: ~1 good deal per quarter at first. Passive = half the projections.</p></div>
-<div class="card anim"><h3><i class="ti ti-hourglass"></i>/04 TIME</h3><p>10-20 hrs/week from someone with a day job and an agency. The contractor knows when nobody's watching.</p></div>
+<div class="card anim" data-at="1063"><h3><i class="ti ti-filter"></i>/03 DEAL FLOW</h3><p>At 2.7 months supply: ~1 good deal per quarter at first. Passive = half the projections.</p></div>
+<div class="card anim" data-at="1076"><h3><i class="ti ti-hourglass"></i>/04 TIME</h3><p>10-20 hrs/week from someone with a day job and an agency. The contractor knows when nobody's watching.</p></div>
 </div></section>
 
 <section class="slide" data-t="1094"><span class="stamp">18:14</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 5</span><span class="chip">/SHORTFALLS 05-07</span></div>
-<h2 class="anim">Where this plan breaks</h2>
+<h2 class="anim">Shortfalls 5-7: the <span class="b">30% tax bite</span> + concentration</h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-alert-octagon"></i>/05 TAXES · /06 MARKET · /07 CONCENTRATION</h3><ul>
 <li><b style="color:#fff">Taxes:</b> flip profit = ordinary "dealer" income. Model knocks 30% off every flip. CPA first.</li>
 <li><b style="color:#fff">Market:</b> flat prices, rising DOM: the 70% rule is body armor, not a suggestion.</li>
 <li><b style="color:#fff">Concentration:</b> by year 5, most net worth sits in one suburb of one metro.</li></ul></div>
-<div class="card anim" style="flex:1.2"><h3><i class="ti ti-chart-arrows-vertical"></i>/SENSITIVITY: FLIP PROFIT IF MARKET DROPS ($K)</h3><div class="chartbox"><canvas data-chart="c_sens"></canvas></div></div>
+<div class="card anim" data-at="1110" style="flex:1.2"><h3><i class="ti ti-chart-arrows-vertical"></i>/SENSITIVITY: FLIP PROFIT IF MARKET DROPS ($K)</h3><div class="chartbox"><canvas data-chart="c_sens"></canvas></div></div>
 </div></section>
 
 <section class="slide" data-t="1140"><span class="stamp">19:00</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 5</span><span class="chip">/OKLAHOMA TRAPS 01</span></div>
-<h2 class="anim">Questions you didn't know to ask</h2>
+<h2 class="anim">Oklahoma traps: <span class="b">hail + clay soil</span></h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-cloud-storm"></i>/HAIL</h3><p>One of America's most hail-prone regions: higher premiums, constant roof replacement, post-storm roofing scammers. "Newer roof" is a real selling point; a trusted roofer is a key vendor.</p></div>
 <div class="card anim"><h3><i class="ti ti-wall"></i>/CLAY SOIL</h3><p>Expansive clay → foundation movement is common. Stair-step brick cracks and stuck doors = stop. A structural engineer costs a few hundred; a foundation surprise turns <span class="pos mono">+$40k</span> into <span class="neg mono">−$10k</span>.</p></div>
@@ -276,7 +277,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="1209"><span class="stamp">20:09</span>
 <div class="eyebrow-row"><span class="chip blue">LAYER 5</span><span class="chip">/OKLAHOMA TRAPS 02</span></div>
-<h2 class="anim">Questions you didn't know to ask</h2>
+<h2 class="anim">Oklahoma traps: <span class="b">vacant pipes + reassessed taxes</span></h2>
 <div class="cols">
 <div class="card anim"><h3><i class="ti ti-snowflake"></i>/VACANT HOUSES</h3><p>Winterize or keep heat on: a burst pipe in a vacant flip is a five-figure event. Standard homeowner's policies often exclude vacancy → builder's risk + vacant policies.</p></div>
 <div class="card anim"><h3><i class="ti ti-key"></i>/LANDLORD + TAXES</h3><p>OK is landlord-friendly with relatively fast evictions, but verify everything your PM says in year one. Property tax ~0.9% effective, <b style="color:#fff">reassessed at YOUR purchase price</b>.</p></div>
@@ -285,7 +286,7 @@ audio{flex:1;height:36px;filter:invert(.9) hue-rotate(180deg)}
 
 <section class="slide" data-t="1280"><span class="stamp">21:19</span>
 <div class="eyebrow-row"><span class="chip blue">/THE VERDICT</span></div>
-<h2 class="anim">Can $200k → 10 houses in 5 years?</h2>
+<h2 class="anim">Verdict: <span class="b">5-7 doors solo</span> · 10 with help</h2>
 <div class="cols">
 <div class="card anim" style="flex:1.3"><h3><i class="ti ti-chart-area"></i>/EQUITY BUILD ($K · CUMULATIVE)</h3><div class="chartbox"><canvas data-chart="c_equity"></canvas></div></div>
 <div class="card anim"><h3><i class="ti ti-checklist"></i>/REALISTIC CAPTURE</h3>
@@ -351,13 +352,17 @@ let cur=-1,sync=true;
 const player=document.getElementById('player');
 player.src="../episodes/2026-06-12-edmond-real-estate-special.mp3";
 player.onerror=()=>{player.onerror=null;player.src="https://dumbsaucey.github.io/ilearn-podcast/episodes/2026-06-12-edmond-real-estate-special.mp3";};
-function show(i){i=Math.max(0,Math.min(slides.length-1,i));if(i===cur)return;cur=i;slides.forEach((s,j)=>s.classList.toggle('active',j===cur));document.getElementById('count').textContent=(cur+1)+" / "+slides.length;const s=slides[cur];requestAnimationFrame(()=>{initCharts(s);animateIn(s);countUps(s);});}
+function show(i){i=Math.max(0,Math.min(slides.length-1,i));if(i===cur)return;cur=i;slides.forEach((s,j)=>s.classList.toggle('active',j===cur));document.getElementById('count').textContent=(cur+1)+" / "+slides.length;const s=slides[cur];requestAnimationFrame(()=>{initCharts(s);animateIn(s);countUps(s);applyReveals();if(s.querySelector('#map'))ensureMap();});}
 document.getElementById('prev').onclick=()=>show(cur-1);
 document.getElementById('next').onclick=()=>show(cur+1);
 document.getElementById('sync').onclick=function(){sync=!sync;this.textContent="SYNC: "+(sync?"ON":"OFF");};
 document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')show(cur+1);if(e.key==='ArrowLeft')show(cur-1);});
-player.addEventListener('timeupdate',()=>{if(!sync)return;let t=player.currentTime,i=0;for(let j=0;j<times.length;j++){if(t>=times[j])i=j;}if(i!==cur)show(i);});
+player.addEventListener('timeupdate',()=>{if(sync){let t=player.currentTime,i=0;for(let j=0;j<times.length;j++){if(t>=times[j])i=j;}if(i!==cur)show(i);}applyReveals();});
 slides.forEach(s=>{const st=s.querySelector('.stamp');if(st)st.onclick=()=>{player.currentTime=parseFloat(s.dataset.t);player.play();};});
+let mapObj=null;
+function ensureMap(){const el=document.getElementById('map');if(!el||!window.L)return;if(!mapObj){mapObj=L.map('map',{zoomControl:false,attributionControl:true}).setView([35.6529,-97.4779],10);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:19}).addTo(mapObj);L.circle([35.6529,-97.4779],{radius:5000,color:'#298DFF',weight:2,fillColor:'#298DFF',fillOpacity:.18}).addTo(mapObj).bindTooltip('EDMOND PROPER · FLIPS',{permanent:true,direction:'top',className:'maplbl'});L.circle([35.6,-97.49],{radius:14000,color:'#AEB6C2',weight:2,dashArray:'4 7',fill:false}).addTo(mapObj).bindTooltip('THE RING · RENTALS',{permanent:true,direction:'bottom',className:'maplbl'});}
+setTimeout(()=>mapObj.invalidateSize(),60);}
+function applyReveals(){const s=slides[cur];if(!s)return;s.querySelectorAll('[data-at]').forEach(el=>{const at=parseFloat(el.dataset.at);const on=!sync||player.paused===false&&player.currentTime>=at||player.currentTime>=at||player.currentTime===0&&!sync;if(!sync||player.currentTime>=at){if(el.classList.contains('hid')){el.classList.remove('hid');if(window.gsap)gsap.fromTo(el,{opacity:0,y:14},{opacity:1,y:0,duration:.4,overwrite:true});}}else{el.classList.add('hid');}});}
 show(0);
 
 if(window.THREE){
