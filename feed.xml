@@ -7,6 +7,10 @@
     <language>en-us</language>
     <description>A personal learning podcast. Two hosts go deep on business, real estate, AI, philosophy, and the ideas worth understanding: built to survive your follow-up questions, with a little wisdom on the way out.</description>
     <itunes:author>iLearn</itunes:author>
+    <itunes:owner>
+      <itunes:name>Carlos</itunes:name>
+      <itunes:email>carlos@digitalshift.co</itunes:email>
+    </itunes:owner>
     <itunes:summary>Two hosts go deep on business, real estate, AI, philosophy, and the ideas worth understanding.</itunes:summary>
     <itunes:image href="https://dumbsaucey.github.io/ilearn-podcast/cover.jpg"/>
     <itunes:explicit>false</itunes:explicit>
